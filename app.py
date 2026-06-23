@@ -43,6 +43,8 @@ if prompt:
 
     if result:
         response = f"""
+Searched for: `{result["search_term"]}`
+
 ### {result["word"]}
 
 **Gloss:** {result["gloss"]}
