@@ -41,21 +41,7 @@ if prompt:
     with st.spinner("Searching the dictionary..."):
         result = process_input(prompt)
 
-    if result:
-        response = f"""
-Searched for: `{result["search_term"]}`
-
-### {result["word"]}
-
-**Gloss:** {result["gloss"]}
-
-**Definition:** {result["definition"]}
-"""
-    else:
-        response = (
-            "I could not find a matching dictionary entry. "
-            "Try asking with a simpler word, like `water`, `dog`, or `food`."
-        )
+    response = result["content"]
 
     with st.chat_message("assistant"):
         st.markdown(response)
