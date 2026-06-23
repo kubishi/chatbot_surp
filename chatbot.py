@@ -278,35 +278,51 @@ def process_input(user_input):
         topic = extract_topic(user_input)
         content = build_word_list(topic)
 
-    elif intent == "sentences":
+        return {
+            "word": f"Vocabulary List: {topic.title()}",
+            "gloss": "Word list",
+            "definition": content or (
+                "I could not find enough dictionary information for that topic."
+            ),
+            "search_term": topic,
+        }
+
+    if intent == "sentences":
         content = build_sentences(user_input)
 
-    elif intent == "slides":
+        return {
+            "word": "Example Sentences",
+            "gloss": "Sentence practice",
+            "definition": content or (
+                "I could not find enough dictionary information to create sentences."
+            ),
+            "search_term": rewrite_query(user_input),
+        }
+
+    if intent == "slides":
+        topic = extract_topic(user_input)
         content = build_slides(user_input)
 
-    else:
-        entry = lookup_word(user_input)
+        return {
+            "word": f"Slide Outline: {topic.title()}",
+            "gloss": "Lesson slides",
+            "definition": content or (
+                "I could not find enough dictionary information to create slides."
+            ),
+            "search_term": topic,
+        }
 
-        if entry:
-            content = f"""
-Searched for: `{entry["search_term"]}`
+    entry = lookup_word(user_input)
 
-### {entry["word"]}
-
-**Gloss:** {entry["gloss"]}
-
-**Definition:** {entry["definition"]}
-"""
-        else:
-            content = None
-
-    if not content:
-        content = (
-            "I could not find enough dictionary information for that request. "
-            "Try asking with a simpler word or topic, like `water`, `animals`, `food`, or `family`."
-        )
+    if entry:
+        return entry
 
     return {
-        "type": "formatted_text",
-        "content": content,
+        "word": "No Result Found",
+        "gloss": "No matching entry",
+        "definition": (
+            "I could not find enough dictionary information for that request. "
+            "Try asking with a simpler word or topic, like water, animals, food, or family."
+        ),
+        "search_term": rewrite_query(user_input),
     }

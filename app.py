@@ -11,6 +11,8 @@ st.title("Owens Valley Paiute Chatbot")
 
 st.write(
     "Ask a question about Owens Valley Paiute vocabulary."
+    "You can request definitions, word lists, example sentences, or slide outlines."
+
 )
 
 if "messages" not in st.session_state:
