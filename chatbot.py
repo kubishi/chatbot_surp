@@ -15,7 +15,7 @@ def get_openai_api_key():
     api_key = os.getenv("OPENAI_API_KEY")
 
     if api_key:
-        return api_key
+        return api_key 
 
     try:
         import streamlit as st
