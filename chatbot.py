@@ -449,10 +449,28 @@ def build_sentences(user_input):
     sentence_data = retrieve_example_sentence(user_input)
 
     if not sentence_data:
-        return None
+        return """
+## No Example Sentence Found
+
+I could not find a dictionary entry or verified example sentence for that search.
+"""
 
     if sentence_data["paiute_sentence"]:
         return format_verified_sentence(sentence_data)
+
+    return f"""
+## No Example Sentence Found
+
+**Search term:** `{sentence_data["search_term"]}`
+
+**Dictionary word:** {sentence_data["word"]}
+
+**Meaning:** {sentence_data["glossary"]}
+
+**Definition:** {sentence_data["definition"]}
+
+I found the dictionary entry, but I did not find a verified example sentence attached to this entry.
+"""
 
 
 def build_slides(user_input):
@@ -518,3 +536,19 @@ def process_input(user_input):
 
         if entry:
                 content = format_entry(entry)
+        else:
+            search_term = rewrite_query(user_input)
+            content = f"""
+## No Dictionary Result Found
+
+I searched for `{search_term}`, but I could not find a matching dictionary entry.
+"""
+
+    if content:
+        return content
+
+    return """
+## No Response Generated
+
+I could not generate a response for that request. Try asking for a specific Paiute word, English word, vocabulary list, or verified example sentence.
+"""
