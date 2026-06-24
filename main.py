@@ -86,7 +86,7 @@ def extract_best_entry(api_response, keyword):
 
             return {
                 "word": entry.get("word", ""),
-                "gloss": sense.get("gloss", "Not available"),
+                "glossary": sense.get("glossary", "Not available"),
                 "definition": sense.get("definition", "Not available")
             }
 
@@ -97,7 +97,7 @@ def extract_best_entry(api_response, keyword):
 
     return {
         "word": entry.get("word", ""),
-        "gloss": sense.get("gloss", "Not available"),
+        "glossary": sense.get("glossary", "Not available"),
         "definition": sense.get("definition", "Not available")
     }
 
