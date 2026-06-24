@@ -44,15 +44,16 @@ if prompt:
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
-                result = process_input(prompt)
+                response = process_input(prompt)
 
-                if isinstance(result, dict):
-                    response = result.get("content", str(result))
-                else:
-                    response = str(result)
+                if response is None:
+                    response = (
+                        "I could not generate a response. "
+                        "Please check that process_input() returns a string."
+                    )
 
-            except Exception as e:
-                response = f"Sorry, something went wrong: {e}"
+            except Exception as error:
+                response = f"Sorry, something went wrong: {error}"
 
             st.markdown(response)
 

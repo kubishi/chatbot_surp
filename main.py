@@ -203,5 +203,4 @@ def main():
         print("\n" + format_output(response) + "\n")
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__"
