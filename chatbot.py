@@ -874,6 +874,7 @@ def build_word_list(topic):
     topic = topic.lower().strip()
     search_terms = generate_topic_words(topic)
     entries = []
+    seen_words = set()
 
     for term in search_terms:
         api_response = search_dictionary(term)
@@ -884,13 +885,12 @@ def build_word_list(topic):
 
         entry["search_term"] = term
 
-        if topic == "numbers" and not is_number_definition(term, entry):
+        word_key = entry.get("word", "").lower().strip()
+
+        if word_key in seen_words:
             continue
 
-        if not is_reasonable_match(term, entry):
-            continue
-
-        entry["search_term"] = term
+        seen_words.add(word_key)
         entries.append(entry)
 
     if not entries:
@@ -1118,20 +1118,21 @@ def process_input(user_input):
     
     if is_general_vocab_request(user_input):
         return """
-    ## Choose a Vocabulary Topic
+## Choose a Vocabulary Topic
 
-    I can give you Paiute vocabulary from the dictionary, but I need a topic so the list is useful.
+I can give you Paiute vocabulary from the dictionary, but I need a topic so the list is useful.
 
-    Try asking for:
-    - food vocabulary
-    - animal vocabulary
-    - family vocabulary
-    - body part vocabulary
-    - number vocabulary
-    - household vocabulary
+Try asking for:
+- food vocabulary
+- animal vocabulary
+- family vocabulary
+- body part vocabulary
+- number vocabulary
+- household vocabulary
 
-    Example: “Give me a list of food vocabulary.”
-    """
+Example: “Give me a list of food vocabulary.”
+"""
+
     intent = classify_request(user_input)
 
     if intent == "vocab_and_sentences":
@@ -1143,14 +1144,16 @@ def process_input(user_input):
     if intent == "word_list":
         topic = extract_topic(user_input)
 
-    if topic == "verbs":
-        specific_terms = extract_terms_from_multi_request(user_input)
+        if topic == "verbs":
+            specific_terms = extract_terms_from_multi_request(user_input)
 
-        if specific_terms:
-            return build_custom_word_list(
-                title="Verbs",
-                search_terms=specific_terms,
-            )
+            if specific_terms:
+                return build_custom_word_list(
+                    title="Verbs",
+                    search_terms=specific_terms,
+                )
+
+        return build_word_list(topic)
 
     if intent == "sentences":
         return build_sentences(user_input)
