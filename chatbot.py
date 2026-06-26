@@ -929,7 +929,7 @@ def build_slides(user_input):
     vocab = build_word_list(topic)
 
     if "## No Vocabulary Found" in vocab:
-        return f"""
+        return f""" 
 ## No Slides Created
 
 I could not find reliable vocabulary for `{topic}`.
