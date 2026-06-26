@@ -83,15 +83,53 @@ def normalize_text(text):
 def extract_count(user_input, default=5, maximum=10):
     """
     Extract a requested number from the user input.
-    Example: "Give me 3 example sentences" -> 3
+    Examples:
+    - "Give me 3 example sentences" -> 3
+    - "Give me one example sentence" -> 1
+    - "Give me an example sentence" -> 1
+    - "Give me a sentence" -> 1
     """
-    match = re.search(r"\b(\d+)\b", user_input)
 
-    if not match:
-        return default
+    text = normalize_text(user_input)
 
-    count = int(match.group(1))
-    return max(1, min(count, maximum))
+    number_words = {
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+        "six": 6,
+        "seven": 7,
+        "eight": 8,
+        "nine": 9,
+        "ten": 10,
+    }
+    
+    digit_match = re.search(r"\b(\d+)\b", text)
+
+    if digit_match:
+        count = int(digit_match.group(1))
+        return max(1, min(count, maximum))
+
+    for word, value in number_words.items():
+        if re.search(rf"\b{word}\b", text):
+            return max(1, min(value, maximum))
+
+    single_example_patterns = [
+        "an example sentence",
+        "a example sentence",
+        "one example sentence",
+        "an example",
+        "a sentence",
+        "one sentence",
+        "a paiute sentence",
+        "one paiute sentence",
+    ]
+
+    if any(pattern in text for pattern in single_example_patterns):
+        return 1
+
+    return default
 
 def is_unsupported_translation_request(user_input):
     """
