@@ -148,6 +148,19 @@ def score_entry_match(search_term, entry):
 
     if definition.startswith(term):
         score += 70
+    
+    # Verb definitions
+    if glossary.startswith(f"to {term}"):
+        score += 85
+
+    if definition.startswith(f"to {term}"):
+        score += 85
+
+    if glossary == f"to {term}":
+        score += 90
+
+    if definition == f"to {term}":
+        score += 90
 
     full_word_pattern = rf"\b{re.escape(term)}\b"
 
@@ -1043,6 +1056,54 @@ def is_general_vocab_request(user_input):
 
     return any(pattern in text for pattern in general_patterns)
 
+def build_custom_word_list(title, search_terms):
+    """
+    Build a vocabulary list from specific user-requested search terms.
+    Example: seeing, eating, speaking -> see, eat, speak
+    """
+    entries = []
+    seen_words = set()
+
+    for term in search_terms:
+        api_response = search_dictionary(term)
+        entry = extract_best_vocab_entry(api_response, term, topic=None)
+
+        if not entry:
+            continue
+
+        entry["search_term"] = term
+
+        word_key = entry.get("word", "").lower().strip()
+
+        if word_key in seen_words:
+            continue
+
+        seen_words.add(word_key)
+        entries.append(entry)
+
+    if not entries:
+        return f"""
+## No Vocabulary Found
+
+I could not find reliable vocabulary for `{title.lower()}`.
+"""
+
+    response = f"## Vocabulary List: {title}\n\n"
+    response += "These entries are retrieved dictionary matches.\n\n"
+    response += f"Generated search terms: `{', '.join(search_terms)}`\n\n"
+
+    for entry in entries:
+        meaning = entry.get("glossary")
+
+        if not meaning or meaning == "No glossary available":
+            meaning = entry.get("definition", "No meaning available")
+
+        response += f"- **{entry['word']}** — {meaning}\n"
+        response += f"  - Search term: `{entry['search_term']}`\n"
+        response += f"  - Definition: {entry['definition']}\n\n"
+
+    return response
+
 def process_input(user_input):
     """
     Main function called by app.py or main.py.
@@ -1081,7 +1142,17 @@ def process_input(user_input):
 
     if intent == "word_list":
         topic = extract_topic(user_input)
-        return build_word_list(topic)
+
+    if topic == "verbs":
+        specific_terms = extract_terms_from_multi_request(user_input)
+
+        if specific_terms:
+            return build_custom_word_list(
+                title="Verbs",
+                search_terms=specific_terms,
+            )
+
+    return build_word_list(topic)
 
     if intent == "sentences":
         return build_sentences(user_input)
