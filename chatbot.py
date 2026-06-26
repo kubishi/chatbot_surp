@@ -1152,8 +1152,6 @@ def process_input(user_input):
                 search_terms=specific_terms,
             )
 
-    return build_word_list(topic)
-
     if intent == "sentences":
         return build_sentences(user_input)
 
