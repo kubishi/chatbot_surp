@@ -870,7 +870,6 @@ def build_word_list(topic):
             continue
 
         entry["search_term"] = term
-        entries.append(entry)
 
         if topic == "numbers" and not is_number_definition(term, entry):
             continue
